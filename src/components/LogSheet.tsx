@@ -129,9 +129,9 @@ export function LogSheet({ visible, onClose, onSuccess }: LogSheetProps) {
 const styles = StyleSheet.create({
   overlay: { flex: 1, backgroundColor: 'rgba(15, 25, 22, 0.4)', justifyContent: 'flex-end' },
   sheetWrapper: { justifyContent: 'flex-end' },
-  sheet: { borderTopLeftRadius: 22, borderTopRightRadius: 22, padding: 20, paddingBottom: 40 },
+  sheet: { borderTopLeftRadius: 22, borderTopRightRadius: 22, paddingHorizontal: 20, paddingTop: 20, paddingBottom: 40 },
   handle: { width: 36, height: 4, borderRadius: 3, alignSelf: 'center', marginBottom: 14 },
-  scrollContent: { paddingBottom: 40 },
+  scrollContent: { paddingBottom: 10 },
   choiceRow: { flexDirection: 'row', alignItems: 'center', gap: 12, padding: 14, borderWidth: 1, borderRadius: 14, marginBottom: 10 },
   choiceIcon: { width: 38, height: 38, borderRadius: 19, alignItems: 'center', justifyContent: 'center' },
   choiceTitle: { fontSize: 14, fontWeight: '600' },
@@ -143,6 +143,6 @@ const styles = StyleSheet.create({
   option: { paddingHorizontal: 14, paddingVertical: 10, borderWidth: 1, borderRadius: 10 },
   optionText: { fontSize: 13, fontWeight: '500' },
   error: { fontSize: 12, marginTop: 8 },
-  btn: { borderRadius: 24, padding: 14, alignItems: 'center', marginTop: 20, marginBottom: 30 },
+  btn: { borderRadius: 24, padding: 14, alignItems: 'center', marginTop: 20 },
   btnText: { color: '#fff', fontWeight: '600', fontSize: 14 },
 });
