@@ -1,6 +1,8 @@
 import React from 'react';
+import { Platform } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NavigationContainer } from '@react-navigation/native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Colors } from '../constants/theme';
 import { TabIcon } from '../components/TabIcon';
 import HomeScreen from '../screens/HomeScreen';
@@ -11,6 +13,9 @@ import SettingsScreen from '../screens/SettingsScreen';
 const Tab = createBottomTabNavigator();
 
 export default function AppNavigator() {
+  const insets = useSafeAreaInsets();
+  const bottomPadding = Platform.OS === 'android' ? Math.max(insets.bottom, 12) : insets.bottom;
+
   return (
     <NavigationContainer>
       <Tab.Navigator
@@ -22,9 +27,9 @@ export default function AppNavigator() {
             backgroundColor: Colors.card,
             borderTopColor: Colors.border,
             borderTopWidth: 1,
-            paddingBottom: 8,
+            paddingBottom: bottomPadding + 8,
             paddingTop: 8,
-            height: 64,
+            height: 64 + bottomPadding,
           },
           tabBarLabelStyle: {
             fontSize: 10.5,

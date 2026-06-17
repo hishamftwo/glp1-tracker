@@ -1,5 +1,6 @@
 import React from 'react';
-import { TouchableOpacity, StyleSheet } from 'react-native';
+import { TouchableOpacity, StyleSheet, Platform } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Svg, { Path } from 'react-native-svg';
 import { Colors } from '../constants/theme';
 
@@ -8,8 +9,15 @@ interface FABProps {
 }
 
 export function FAB({ onPress }: FABProps) {
+  const insets = useSafeAreaInsets();
+  const bottomOffset = Platform.OS === 'android' ? Math.max(insets.bottom, 12) : insets.bottom;
+
   return (
-    <TouchableOpacity style={styles.fab} onPress={onPress} activeOpacity={0.8}>
+    <TouchableOpacity
+      style={[styles.fab, { bottom: 80 + bottomOffset }]}
+      onPress={onPress}
+      activeOpacity={0.8}
+    >
       <Svg
         width={24}
         height={24}
@@ -30,7 +38,6 @@ const styles = StyleSheet.create({
   fab: {
     position: 'absolute',
     right: 18,
-    bottom: 80,
     width: 52,
     height: 52,
     borderRadius: 26,
