@@ -1,5 +1,5 @@
 {
-  "name": "glp1-tracker",
+  "name": "pinwell",
   "version": "1.0.0",
   "main": "index.ts",
   "dependencies": {
