@@ -13,12 +13,12 @@ async function generate() {
     .toFile(path.join(__dirname, 'assets', 'icon.png'));
   console.log('Created icon.png (1024x1024)');
 
-  // Splash icon (200x200 centered on transparent)
+  // Splash icon (512x512 for loading screen)
   await sharp(svg)
-    .resize(200, 200)
+    .resize(512, 512)
     .png()
     .toFile(path.join(__dirname, 'assets', 'splash-icon.png'));
-  console.log('Created splash-icon.png (200x200)');
+  console.log('Created splash-icon.png (512x512)');
 
   // Android adaptive icon foreground
   await sharp(svg)

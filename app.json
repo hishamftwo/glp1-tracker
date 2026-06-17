@@ -1,20 +1,24 @@
 {
   "expo": {
-    "name": "GLP-1 Tracker",
-    "slug": "glp1-tracker",
+    "name": "Pinwell",
+    "slug": "pinwell",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
-    "userInterfaceStyle": "light",
+    "userInterfaceStyle": "automatic",
     "sdkVersion": "54.0.0",
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#1F6F64"
+    },
     "ios": {
       "supportsTablet": true
     },
     "android": {
       "adaptiveIcon": {
-        "backgroundColor": "#EAF6F1",
-        "foregroundImage": "./assets/android-icon-foreground.png",
-        "backgroundImage": "./assets/android-icon-background.png"
+        "backgroundColor": "#1F6F64",
+        "foregroundImage": "./assets/android-icon-foreground.png"
       }
     },
     "web": {
