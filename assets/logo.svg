@@ -28,6 +28,6 @@
   <!-- Shine reflection on drop -->
   <ellipse cx="440" cy="460" rx="55" ry="85" fill="url(#shine)" />
   
-  <!-- App name: Pinwell -->
-  <text x="512" y="920" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="130" font-weight="bold" fill="#FFFFFF" letter-spacing="6">Pinwell</text>
+  <!-- App name: Pinwell - Bold chunky style -->
+  <text x="512" y="930" text-anchor="middle" font-family="'Futura', 'Avenir', 'Montserrat', 'Poppins', sans-serif" font-size="140" font-weight="900" fill="#FFFFFF" letter-spacing="3">Pinwell</text>
 </svg>
