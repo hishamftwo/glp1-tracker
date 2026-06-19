@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, ScrollView, StyleSheet } from 'react-native';
+import { View, Text, ScrollView, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import Svg, { Path, Circle as SvgCircle, Line, Text as SvgText } from 'react-native-svg';
 import { useTheme } from '../hooks/useTheme';
 import { useAppData } from '../hooks/useAppData';
@@ -8,7 +8,7 @@ import { GoalCard } from '../components/GoalCard';
 
 export default function WeightScreen() {
   const colors = useTheme();
-  const { data, sortedInjections, sortedWeights } = useAppData();
+  const { data, sortedInjections, sortedWeights, deleteWeight } = useAppData();
   const weights = sortedWeights();
   const injections = sortedInjections();
   const injectionsAsc = [...data.injections].sort((a, b) => (a.date < b.date ? -1 : 1));
@@ -45,6 +45,17 @@ export default function WeightScreen() {
 
   const insights = computeInsights(weights, injections, data.profile.goalWeight, colors);
   const weightsDesc = [...weights].reverse();
+
+  const handleDeleteWeight = (id: string) => {
+    Alert.alert(
+      'Delete Entry',
+      'Are you sure? This will also remove the data point from your chart.',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        { text: 'Delete', style: 'destructive', onPress: () => deleteWeight(id) },
+      ]
+    );
+  };
 
   return (
     <ScrollView style={[styles.container, { backgroundColor: colors.bgApp }]} contentContainerStyle={styles.content}>
@@ -123,7 +134,12 @@ export default function WeightScreen() {
               <Text style={[styles.entryValue, { color: colors.ink }]}>{w.value} lbs</Text>
               <Text style={[styles.entryDate, { color: colors.inkSoft }]}>{fmtShort(w.date)}</Text>
             </View>
-            <Text style={[styles.entryDelta, { color: d < 0 ? colors.teal : d > 0 ? colors.coral : colors.inkSoft }]}>{dText}</Text>
+            <View style={styles.entryRight}>
+              <Text style={[styles.entryDelta, { color: d < 0 ? colors.teal : d > 0 ? colors.coral : colors.inkSoft }]}>{dText}</Text>
+              <TouchableOpacity onPress={() => handleDeleteWeight(w.id)} style={styles.deleteBtn}>
+                <Text style={[styles.deleteBtnText, { color: colors.coral }]}>✕</Text>
+              </TouchableOpacity>
+            </View>
           </View>
         );
       })}
@@ -177,7 +193,10 @@ const styles = StyleSheet.create({
   insightCard: { borderWidth: 1, borderRadius: 14, padding: 12, marginBottom: 10, borderLeftWidth: 4 },
   insightText: { fontSize: 13, lineHeight: 19 },
   entryRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: 10, borderBottomWidth: 1 },
+  entryRight: { flexDirection: 'row', alignItems: 'center', gap: 12 },
   entryValue: { fontSize: 13.5, fontWeight: '600' },
   entryDate: { fontSize: 12, marginTop: 2 },
   entryDelta: { fontSize: 12.5, fontWeight: '600' },
+  deleteBtn: { padding: 8 },
+  deleteBtnText: { fontSize: 18, fontWeight: '600' },
 });

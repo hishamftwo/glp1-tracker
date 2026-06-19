@@ -8,6 +8,8 @@ interface AppDataContextType {
   loading: boolean;
   addInjection: (injection: Omit<Injection, 'id'>) => void;
   addWeight: (weight: Omit<WeightEntry, 'id'>) => void;
+  deleteInjection: (id: string) => void;
+  deleteWeight: (id: string) => void;
   updateProfile: (profile: Partial<UserProfile>) => void;
   completeOnboarding: (profile: Partial<UserProfile>, firstWeight: Omit<WeightEntry, 'id'>) => void;
   sortedInjections: () => Injection[];
@@ -50,6 +52,22 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
     [data, persist]
   );
 
+  const deleteInjection = useCallback(
+    (id: string) => {
+      const newData = { ...data, injections: data.injections.filter((i) => i.id !== id) };
+      persist(newData);
+    },
+    [data, persist]
+  );
+
+  const deleteWeight = useCallback(
+    (id: string) => {
+      const newData = { ...data, weights: data.weights.filter((w) => w.id !== id) };
+      persist(newData);
+    },
+    [data, persist]
+  );
+
   const updateProfile = useCallback(
     (profileUpdate: Partial<UserProfile>) => {
       const newData = { ...data, profile: { ...data.profile, ...profileUpdate } };
@@ -86,6 +104,8 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
         loading,
         addInjection,
         addWeight,
+        deleteInjection,
+        deleteWeight,
         updateProfile,
         completeOnboarding,
         sortedInjections,

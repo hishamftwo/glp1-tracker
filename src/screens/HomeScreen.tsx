@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, ScrollView, StyleSheet } from 'react-native';
+import { View, Text, ScrollView, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import Svg, { Path, Circle } from 'react-native-svg';
 import { useTheme } from '../hooks/useTheme';
 import { useAppData } from '../hooks/useAppData';
@@ -9,7 +9,7 @@ import { GoalCard } from '../components/GoalCard';
 
 export default function HomeScreen() {
   const colors = useTheme();
-  const { data, sortedInjections, sortedWeights } = useAppData();
+  const { data, sortedInjections, sortedWeights, deleteInjection, deleteWeight } = useAppData();
   const today = new Date();
 
   const injections = sortedInjections();
@@ -38,11 +38,29 @@ export default function HomeScreen() {
 
   // Recent activity
   const events = [
-    ...data.injections.map((i) => ({ type: 'inj' as const, date: i.date, label: `${i.dose} · ${i.site}` })),
-    ...data.weights.map((w) => ({ type: 'wt' as const, date: w.date, label: `${w.value} lbs` })),
+    ...data.injections.map((i) => ({ type: 'inj' as const, id: i.id, date: i.date, label: `${i.dose} · ${i.site}` })),
+    ...data.weights.map((w) => ({ type: 'wt' as const, id: w.id, date: w.date, label: `${w.value} lbs` })),
   ]
     .sort((a, b) => (a.date < b.date ? 1 : -1))
     .slice(0, 4);
+
+  const handleDelete = (type: 'inj' | 'wt', id: string) => {
+    Alert.alert(
+      'Delete Entry',
+      'Are you sure you want to delete this entry?',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Delete',
+          style: 'destructive',
+          onPress: () => {
+            if (type === 'inj') deleteInjection(id);
+            else deleteWeight(id);
+          },
+        },
+      ]
+    );
+  };
 
   const hasData = injections.length > 0 || weights.length > 0;
 
@@ -118,6 +136,9 @@ export default function HomeScreen() {
                 </Text>
                 <Text style={[styles.actSub, { color: colors.inkSoft }]}>{fmtShort(event.date)} · {event.label}</Text>
               </View>
+              <TouchableOpacity onPress={() => handleDelete(event.type, event.id)} style={styles.deleteBtn}>
+                <Text style={[styles.deleteBtnText, { color: colors.coral }]}>✕</Text>
+              </TouchableOpacity>
             </View>
           ))}
         </>
@@ -145,4 +166,6 @@ const styles = StyleSheet.create({
   actText: { flex: 1 },
   actTitle: { fontSize: 13.5, fontWeight: '600' },
   actSub: { fontSize: 12, marginTop: 1 },
+  deleteBtn: { padding: 8 },
+  deleteBtnText: { fontSize: 18, fontWeight: '600' },
 });
