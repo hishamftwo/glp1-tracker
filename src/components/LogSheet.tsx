@@ -6,7 +6,6 @@ import {
 import Svg, { Path, Circle } from 'react-native-svg';
 import { useTheme } from '../hooks/useTheme';
 import { useAppData } from '../hooks/useAppData';
-import { ymd } from '../utils/helpers';
 
 type SheetMode = 'choose' | 'injection' | 'weight';
 
@@ -16,36 +15,84 @@ interface LogSheetProps {
   onSuccess: (message: string) => void;
 }
 
-const DOSES = ['2.5 mg', '5 mg', '7.5 mg', '10 mg', '12.5 mg', '15 mg'];
+const DOSES = ['2.5 mg', '5 mg', '7.5 mg', '10 mg', '12.5 mg', '15 mg', 'Other'];
 const SITES = ['Abdomen', 'Thigh', 'Upper arm', 'Other'];
+
+function getTodayDDMMYY(): string {
+  const d = new Date();
+  const day = String(d.getDate()).padStart(2, '0');
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const year = String(d.getFullYear()).slice(-2);
+  return `${day}-${month}-${year}`;
+}
+
+function parseDDMMYY(dateStr: string): string {
+  // Convert DD-MM-YY to YYYY-MM-DD for storage
+  const parts = dateStr.split('-');
+  if (parts.length === 3) {
+    const day = parts[0];
+    const month = parts[1];
+    const year = parts[2].length === 2 ? '20' + parts[2] : parts[2];
+    return `${year}-${month}-${day}`;
+  }
+  return dateStr;
+}
 
 export function LogSheet({ visible, onClose, onSuccess }: LogSheetProps) {
   const colors = useTheme();
   const { addInjection, addWeight } = useAppData();
   const [mode, setMode] = useState<SheetMode>('choose');
   const [error, setError] = useState('');
-  const [injDate, setInjDate] = useState(ymd(new Date()));
+  const [injDate, setInjDate] = useState(getTodayDDMMYY());
   const [injDose, setInjDose] = useState('');
+  const [injDoseCustom, setInjDoseCustom] = useState('');
   const [injSite, setInjSite] = useState('Abdomen');
-  const [wtDate, setWtDate] = useState(ymd(new Date()));
+  const [injSiteCustom, setInjSiteCustom] = useState('');
+  const [wtDate, setWtDate] = useState(getTodayDDMMYY());
   const [wtValue, setWtValue] = useState('');
 
-  const reset = () => { setMode('choose'); setError(''); setInjDate(ymd(new Date())); setInjDose(''); setInjSite('Abdomen'); setWtDate(ymd(new Date())); setWtValue(''); };
+  const reset = () => {
+    setMode('choose');
+    setError('');
+    setInjDate(getTodayDDMMYY());
+    setInjDose('');
+    setInjDoseCustom('');
+    setInjSite('Abdomen');
+    setInjSiteCustom('');
+    setWtDate(getTodayDDMMYY());
+    setWtValue('');
+  };
   const handleClose = () => { reset(); onClose(); };
 
   const saveInjection = () => {
-    if (!injDose) { setError('Please select a dose.'); return; }
-    addInjection({ date: injDate, dose: injDose, site: injSite });
+    // Determine final dose
+    let finalDose = injDose;
+    if (injDose === 'Other') {
+      if (!injDoseCustom.trim()) { setError('Please enter a custom dose.'); return; }
+      finalDose = injDoseCustom.trim();
+    }
+    if (!finalDose) { setError('Please select a dose.'); return; }
+
+    // Determine final site
+    let finalSite = injSite;
+    if (injSite === 'Other') {
+      if (!injSiteCustom.trim()) { setError('Please enter a custom injection site.'); return; }
+      finalSite = injSiteCustom.trim();
+    }
+
+    const storedDate = parseDDMMYY(injDate);
+    addInjection({ date: storedDate, dose: finalDose, site: finalSite });
     handleClose();
-    onSuccess('Injection logged \u2713');
+    onSuccess('Injection logged ✓');
   };
 
   const saveWeight = () => {
     const val = parseFloat(wtValue);
     if (!val || isNaN(val)) { setError('Please enter a weight.'); return; }
-    addWeight({ date: wtDate, value: val });
+    const storedDate = parseDDMMYY(wtDate);
+    addWeight({ date: storedDate, value: val });
     handleClose();
-    onSuccess('Weight logged \u2713');
+    onSuccess('Weight logged ✓');
   };
 
   return (
@@ -85,8 +132,10 @@ export function LogSheet({ visible, onClose, onSuccess }: LogSheetProps) {
             {mode === 'injection' && (
               <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
                 <Text style={[styles.sheetTitle, { color: colors.ink }]}>Log injection</Text>
-                <Text style={[styles.fieldLabel, { color: colors.inkSoft }]}>Date</Text>
-                <TextInput style={[styles.input, { borderColor: colors.border, color: colors.ink }]} value={injDate} onChangeText={setInjDate} placeholder="YYYY-MM-DD" placeholderTextColor={colors.inkSoft} />
+
+                <Text style={[styles.fieldLabel, { color: colors.inkSoft }]}>Date (DD-MM-YY)</Text>
+                <TextInput style={[styles.input, { borderColor: colors.border, color: colors.ink }]} value={injDate} onChangeText={setInjDate} placeholder="DD-MM-YY" placeholderTextColor={colors.inkSoft} />
+
                 <Text style={[styles.fieldLabel, { color: colors.inkSoft }]}>Dose</Text>
                 <View style={styles.optionGrid}>
                   {DOSES.map((dose) => (
@@ -95,14 +144,34 @@ export function LogSheet({ visible, onClose, onSuccess }: LogSheetProps) {
                     </TouchableOpacity>
                   ))}
                 </View>
+                {injDose === 'Other' && (
+                  <TextInput
+                    style={[styles.input, { borderColor: colors.border, color: colors.ink, marginTop: 8 }]}
+                    value={injDoseCustom}
+                    onChangeText={(t) => { setInjDoseCustom(t); setError(''); }}
+                    placeholder="Enter custom dose (e.g. 3.5 mg)"
+                    placeholderTextColor={colors.inkSoft}
+                  />
+                )}
+
                 <Text style={[styles.fieldLabel, { color: colors.inkSoft }]}>Injection site</Text>
                 <View style={styles.optionGrid}>
                   {SITES.map((site) => (
-                    <TouchableOpacity key={site} style={[styles.option, { borderColor: colors.border }, injSite === site && { backgroundColor: colors.tealLight, borderColor: colors.teal }]} onPress={() => setInjSite(site)}>
+                    <TouchableOpacity key={site} style={[styles.option, { borderColor: colors.border }, injSite === site && { backgroundColor: colors.tealLight, borderColor: colors.teal }]} onPress={() => { setInjSite(site); setError(''); }}>
                       <Text style={[styles.optionText, { color: colors.ink }, injSite === site && { color: colors.teal, fontWeight: '600' }]}>{site}</Text>
                     </TouchableOpacity>
                   ))}
                 </View>
+                {injSite === 'Other' && (
+                  <TextInput
+                    style={[styles.input, { borderColor: colors.border, color: colors.ink, marginTop: 8 }]}
+                    value={injSiteCustom}
+                    onChangeText={(t) => { setInjSiteCustom(t); setError(''); }}
+                    placeholder="Enter custom site (e.g. Buttocks)"
+                    placeholderTextColor={colors.inkSoft}
+                  />
+                )}
+
                 {error ? <Text style={[styles.error, { color: colors.coral }]}>{error}</Text> : null}
                 <TouchableOpacity style={[styles.btn, { backgroundColor: colors.teal }]} onPress={saveInjection}><Text style={styles.btnText}>Save</Text></TouchableOpacity>
               </ScrollView>
@@ -111,8 +180,8 @@ export function LogSheet({ visible, onClose, onSuccess }: LogSheetProps) {
             {mode === 'weight' && (
               <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
                 <Text style={[styles.sheetTitle, { color: colors.ink }]}>Log weight</Text>
-                <Text style={[styles.fieldLabel, { color: colors.inkSoft }]}>Date</Text>
-                <TextInput style={[styles.input, { borderColor: colors.border, color: colors.ink }]} value={wtDate} onChangeText={setWtDate} placeholder="YYYY-MM-DD" placeholderTextColor={colors.inkSoft} />
+                <Text style={[styles.fieldLabel, { color: colors.inkSoft }]}>Date (DD-MM-YY)</Text>
+                <TextInput style={[styles.input, { borderColor: colors.border, color: colors.ink }]} value={wtDate} onChangeText={setWtDate} placeholder="DD-MM-YY" placeholderTextColor={colors.inkSoft} />
                 <Text style={[styles.fieldLabel, { color: colors.inkSoft }]}>Weight (lbs)</Text>
                 <TextInput style={[styles.input, { borderColor: colors.border, color: colors.ink }]} value={wtValue} onChangeText={(t) => { setWtValue(t); setError(''); }} placeholder="e.g. 199.5" placeholderTextColor={colors.inkSoft} keyboardType="decimal-pad" />
                 {error ? <Text style={[styles.error, { color: colors.coral }]}>{error}</Text> : null}
