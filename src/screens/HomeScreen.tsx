@@ -1,16 +1,18 @@
-import React from 'react';
-import { View, Text, ScrollView, StyleSheet, TouchableOpacity, Alert } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, ScrollView, StyleSheet, TouchableOpacity } from 'react-native';
 import Svg, { Path, Circle } from 'react-native-svg';
 import { useTheme } from '../hooks/useTheme';
 import { useAppData } from '../hooks/useAppData';
 import { fmtShort, fmtLong } from '../utils/helpers';
 import { RingCountdown } from '../components/RingCountdown';
 import { GoalCard } from '../components/GoalCard';
+import { ConfirmDialog } from '../components/ConfirmDialog';
 
 export default function HomeScreen() {
   const colors = useTheme();
   const { data, sortedInjections, sortedWeights, deleteInjection, deleteWeight } = useAppData();
   const today = new Date();
+  const [deleteTarget, setDeleteTarget] = useState<{ type: 'inj' | 'wt'; id: string } | null>(null);
 
   const injections = sortedInjections();
   const weights = sortedWeights();
@@ -45,21 +47,15 @@ export default function HomeScreen() {
     .slice(0, 4);
 
   const handleDelete = (type: 'inj' | 'wt', id: string) => {
-    Alert.alert(
-      'Delete Entry',
-      'Are you sure you want to delete this entry?',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Delete',
-          style: 'destructive',
-          onPress: () => {
-            if (type === 'inj') deleteInjection(id);
-            else deleteWeight(id);
-          },
-        },
-      ]
-    );
+    setDeleteTarget({ type, id });
+  };
+
+  const confirmDelete = () => {
+    if (deleteTarget) {
+      if (deleteTarget.type === 'inj') deleteInjection(deleteTarget.id);
+      else deleteWeight(deleteTarget.id);
+      setDeleteTarget(null);
+    }
   };
 
   const hasData = injections.length > 0 || weights.length > 0;
@@ -143,6 +139,14 @@ export default function HomeScreen() {
           ))}
         </>
       )}
+
+      <ConfirmDialog
+        visible={deleteTarget !== null}
+        title="Delete Entry"
+        message="Are you sure? This will permanently remove this entry from everywhere — including your charts."
+        onConfirm={confirmDelete}
+        onCancel={() => setDeleteTarget(null)}
+      />
     </ScrollView>
   );
 }

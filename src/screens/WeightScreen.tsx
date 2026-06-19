@@ -1,14 +1,16 @@
-import React from 'react';
-import { View, Text, ScrollView, StyleSheet, TouchableOpacity, Alert } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, ScrollView, StyleSheet, TouchableOpacity } from 'react-native';
 import Svg, { Path, Circle as SvgCircle, Line, Text as SvgText } from 'react-native-svg';
 import { useTheme } from '../hooks/useTheme';
 import { useAppData } from '../hooks/useAppData';
 import { fmtShort, getDoseColor } from '../utils/helpers';
 import { GoalCard } from '../components/GoalCard';
+import { ConfirmDialog } from '../components/ConfirmDialog';
 
 export default function WeightScreen() {
   const colors = useTheme();
   const { data, sortedInjections, sortedWeights, deleteWeight } = useAppData();
+  const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
   const weights = sortedWeights();
   const injections = sortedInjections();
   const injectionsAsc = [...data.injections].sort((a, b) => (a.date < b.date ? -1 : 1));
@@ -47,14 +49,14 @@ export default function WeightScreen() {
   const weightsDesc = [...weights].reverse();
 
   const handleDeleteWeight = (id: string) => {
-    Alert.alert(
-      'Delete Entry',
-      'Are you sure? This will also remove the data point from your chart.',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        { text: 'Delete', style: 'destructive', onPress: () => deleteWeight(id) },
-      ]
-    );
+    setDeleteTarget(id);
+  };
+
+  const confirmDelete = () => {
+    if (deleteTarget) {
+      deleteWeight(deleteTarget);
+      setDeleteTarget(null);
+    }
   };
 
   return (
@@ -143,6 +145,14 @@ export default function WeightScreen() {
           </View>
         );
       })}
+
+      <ConfirmDialog
+        visible={deleteTarget !== null}
+        title="Delete Entry"
+        message="Are you sure? This will permanently remove this weight entry and update your chart."
+        onConfirm={confirmDelete}
+        onCancel={() => setDeleteTarget(null)}
+      />
     </ScrollView>
   );
 }
