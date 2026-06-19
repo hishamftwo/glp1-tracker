@@ -8,7 +8,7 @@ import { useAppData } from '../hooks/useAppData';
 
 export default function OnboardingScreen() {
   const colors = useTheme();
-  const { updateProfile, addWeight } = useAppData();
+  const { completeOnboarding } = useAppData();
 
   const [name, setName] = useState('');
   const [age, setAge] = useState('');
@@ -24,17 +24,17 @@ export default function OnboardingScreen() {
     if (!weight || isNaN(Number(weight)) || Number(weight) <= 0) { setError('Please enter your current weight.'); return; }
     if (!height || isNaN(Number(height)) || Number(height) <= 0) { setError('Please enter your height.'); return; }
 
-    updateProfile({
-      name: name.trim(),
-      age: Number(age),
-      sex,
-      startWeight: Number(weight),
-      height: Number(height),
-      onboardingComplete: true,
-    });
-
-    // Also log the first weight entry
-    addWeight({ date: new Date().toISOString().split('T')[0], value: Number(weight) });
+    completeOnboarding(
+      {
+        name: name.trim(),
+        age: Number(age),
+        sex,
+        startWeight: Number(weight),
+        height: Number(height),
+        onboardingComplete: true,
+      },
+      { date: new Date().toISOString().split('T')[0], value: Number(weight) }
+    );
   };
 
   const SexOption = ({ value, label }: { value: 'male' | 'female' | 'other'; label: string }) => (

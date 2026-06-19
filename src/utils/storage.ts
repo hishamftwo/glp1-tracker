@@ -27,9 +27,27 @@ export async function loadData(): Promise<AppData> {
     const json = await AsyncStorage.getItem(STORAGE_KEY);
     if (json) {
       const parsed = JSON.parse(json) as AppData;
-      // Ensure darkMode field exists for older saved data
+      // Ensure new fields exist for older saved data
       if (parsed.profile.darkMode === undefined) {
         parsed.profile.darkMode = false;
+      }
+      if (parsed.profile.onboardingComplete === undefined) {
+        parsed.profile.onboardingComplete = false;
+      }
+      if (parsed.profile.name === undefined) {
+        parsed.profile.name = '';
+      }
+      if (parsed.profile.age === undefined) {
+        parsed.profile.age = 0;
+      }
+      if (parsed.profile.sex === undefined) {
+        parsed.profile.sex = '';
+      }
+      if (parsed.profile.height === undefined) {
+        parsed.profile.height = 0;
+      }
+      if (parsed.profile.heightUnit === undefined) {
+        parsed.profile.heightUnit = 'cm';
       }
       return parsed;
     }

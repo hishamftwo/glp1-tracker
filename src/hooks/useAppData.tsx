@@ -9,6 +9,7 @@ interface AppDataContextType {
   addInjection: (injection: Omit<Injection, 'id'>) => void;
   addWeight: (weight: Omit<WeightEntry, 'id'>) => void;
   updateProfile: (profile: Partial<UserProfile>) => void;
+  completeOnboarding: (profile: Partial<UserProfile>, firstWeight: Omit<WeightEntry, 'id'>) => void;
   sortedInjections: () => Injection[];
   sortedWeights: () => WeightEntry[];
 }
@@ -57,6 +58,19 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
     [data, persist]
   );
 
+  const completeOnboarding = useCallback(
+    (profileUpdate: Partial<UserProfile>, firstWeight: Omit<WeightEntry, 'id'>) => {
+      const newWeight: WeightEntry = { ...firstWeight, id: generateId() };
+      const newData = {
+        ...data,
+        profile: { ...data.profile, ...profileUpdate },
+        weights: [...data.weights, newWeight],
+      };
+      persist(newData);
+    },
+    [data, persist]
+  );
+
   const sortedInjections = useCallback(() => {
     return [...data.injections].sort((a, b) => (a.date < b.date ? 1 : -1));
   }, [data.injections]);
@@ -73,6 +87,7 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
         addInjection,
         addWeight,
         updateProfile,
+        completeOnboarding,
         sortedInjections,
         sortedWeights,
       }}
