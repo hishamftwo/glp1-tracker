@@ -7,12 +7,18 @@ export const defaultData: AppData = {
   injections: [],
   weights: [],
   profile: {
+    name: '',
+    age: 0,
+    sex: '',
+    height: 0,
     startWeight: 0,
     goalWeight: 0,
     reminderEnabled: true,
     reminderTime: '09:00',
     weightUnit: 'lbs',
+    heightUnit: 'cm',
     darkMode: false,
+    onboardingComplete: false,
   },
 };
 

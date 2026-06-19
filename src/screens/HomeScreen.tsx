@@ -48,7 +48,7 @@ export default function HomeScreen() {
 
   return (
     <ScrollView style={[styles.container, { backgroundColor: colors.bgApp }]} contentContainerStyle={styles.content}>
-      <Text style={[styles.title, { color: colors.ink }]}>Hi there</Text>
+      <Text style={[styles.title, { color: colors.ink }]}>Hello, {data.profile.name}</Text>
       <Text style={[styles.subtitle, { color: colors.inkSoft }]}>{fmtLong(today)}</Text>
 
       {injections.length > 0 && <RingCountdown daysUntil={daysUntil} />}

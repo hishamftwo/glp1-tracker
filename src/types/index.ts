@@ -12,12 +12,18 @@ export interface WeightEntry {
 }
 
 export interface UserProfile {
+  name: string;
+  age: number;
+  sex: 'male' | 'female' | 'other' | '';
+  height: number; // in cm or inches
   startWeight: number;
   goalWeight: number;
   reminderEnabled: boolean;
   reminderTime: string; // e.g. '09:00'
   weightUnit: 'lbs' | 'kg';
+  heightUnit: 'cm' | 'in';
   darkMode: boolean;
+  onboardingComplete: boolean;
 }
 
 export interface AppData {
