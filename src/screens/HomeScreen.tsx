@@ -38,7 +38,7 @@ export default function HomeScreen() {
 
   // Recent activity
   const events = [
-    ...data.injections.map((i) => ({ type: 'inj' as const, date: i.date, label: `${i.dose} \u00B7 ${i.site}` })),
+    ...data.injections.map((i) => ({ type: 'inj' as const, date: i.date, label: `${i.dose} · ${i.site}` })),
     ...data.weights.map((w) => ({ type: 'wt' as const, date: w.date, label: `${w.value} lbs` })),
   ]
     .sort((a, b) => (a.date < b.date ? 1 : -1))
@@ -68,7 +68,7 @@ export default function HomeScreen() {
             <Text style={[styles.statLabel, { color: colors.inkSoft }]}>Last dose</Text>
             <Text style={[styles.statValue, { color: colors.ink }]}>{lastInjection?.dose || '\u2014'}</Text>
             <Text style={[styles.statDelta, { color: colors.inkSoft }]}>
-              {lastInjection ? `${fmtShort(lastInjection.date)} \u00B7 ${lastInjection.site}` : ''}
+              {lastInjection ? `${fmtShort(lastInjection.date)} · ${lastInjection.site}` : ''}
             </Text>
           </View>
           <View style={[styles.statCard, { backgroundColor: colors.card, borderColor: colors.border }]}>
@@ -116,7 +116,7 @@ export default function HomeScreen() {
                 <Text style={[styles.actTitle, { color: colors.ink }]}>
                   {event.type === 'inj' ? 'Injection logged' : 'Weight logged'}
                 </Text>
-                <Text style={[styles.actSub, { color: colors.inkSoft }]}>{fmtShort(event.date)} \u00B7 {event.label}</Text>
+                <Text style={[styles.actSub, { color: colors.inkSoft }]}>{fmtShort(event.date)} · {event.label}</Text>
               </View>
             </View>
           ))}

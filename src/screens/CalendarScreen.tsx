@@ -96,7 +96,7 @@ export default function CalendarScreen() {
           <Text style={[styles.dayDetailText, { color: colors.ink }]}>
             {fmtShort(selectedDay)} —{' '}
             {selectedInj || selectedWt
-              ? [selectedInj && `Injected ${selectedInj.dose}, ${selectedInj.site}`, selectedWt && `Weight ${selectedWt.value} lbs`].filter(Boolean).join(' \u00B7 ')
+              ? [selectedInj && `Injected ${selectedInj.dose}, ${selectedInj.site}`, selectedWt && `Weight ${selectedWt.value} lbs`].filter(Boolean).join(' · ')
               : 'no entries. Tap + to log something.'}
           </Text>
         </View>
