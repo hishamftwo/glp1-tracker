@@ -57,6 +57,14 @@ export default function OnboardingScreen() {
           Let's set up your profile to personalize your experience.
         </Text>
 
+        <View style={[styles.privacyCard, { backgroundColor: colors.tealLight, borderColor: colors.teal }]}>
+          <Text style={[styles.privacyTitle, { color: colors.teal }]}>Your privacy matters</Text>
+          <Text style={[styles.privacyText, { color: colors.ink }]}>
+            Pinwell is completely free — no hidden payments, no subscriptions, no ads. Ever.{'\n\n'}
+            All your data is encrypted and stored only on your device. Nothing is shared with any third party. Your health journey is yours alone.
+          </Text>
+        </View>
+
         <Text style={[styles.label, { color: colors.inkSoft }]}>Your name</Text>
         <TextInput
           style={[styles.input, { borderColor: colors.border, color: colors.ink }]}
@@ -117,7 +125,10 @@ const styles = StyleSheet.create({
   container: { flex: 1 },
   content: { padding: 24, paddingTop: 80, paddingBottom: 60 },
   title: { fontSize: 28, fontWeight: '800', marginBottom: 8 },
-  subtitle: { fontSize: 15, lineHeight: 22, marginBottom: 30 },
+  subtitle: { fontSize: 15, lineHeight: 22, marginBottom: 20 },
+  privacyCard: { borderWidth: 1, borderRadius: 14, padding: 14, marginBottom: 24 },
+  privacyTitle: { fontSize: 14, fontWeight: '700', marginBottom: 6 },
+  privacyText: { fontSize: 13, lineHeight: 19 },
   label: { fontSize: 13, fontWeight: '600', marginBottom: 6, marginTop: 16 },
   input: { borderWidth: 1, borderRadius: 12, padding: 14, fontSize: 16 },
   sexRow: { flexDirection: 'row', gap: 10 },
